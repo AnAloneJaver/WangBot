@@ -25,6 +25,9 @@ public class SenderMsgUtil {
         sender.sendPrivateMsg(code, msg);
     }
 
+    public static void sendGroupMsg(Sender sender,String code,String msg){
+        sender.sendGroupMsg(code,msg);
+    }
     /**
      * 发送图片
      * @param sender
