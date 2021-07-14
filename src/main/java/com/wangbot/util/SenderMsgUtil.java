@@ -1,4 +1,4 @@
-package com.wangbot.wangbot.util;
+package com.wangbot.util;
 
 import love.forte.simbot.api.message.MessageContent;
 import love.forte.simbot.api.message.MessageContentBuilderFactory;

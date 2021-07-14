@@ -1,4 +1,4 @@
-package com.wangbot.wangbot;
+package com.wangbot;
 
 import love.forte.simbot.spring.autoconfigure.EnableSimbot;
 import org.springframework.boot.SpringApplication;

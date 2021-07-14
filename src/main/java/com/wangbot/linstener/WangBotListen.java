@@ -1,23 +1,15 @@
-package com.wangbot.wangbot.linstener;
+package com.wangbot.linstener;
 
 import catcode.CatCodeUtil;
 import catcode.CodeTemplate;
-import cn.hutool.core.util.StrUtil;
-import com.wangbot.wangbot.util.SenderMsgUtil;
 import love.forte.simbot.annotation.Filter;
 import love.forte.simbot.annotation.OnGroup;
-import love.forte.simbot.annotation.OnPrivate;
-import love.forte.simbot.api.message.MessageContent;
 import love.forte.simbot.api.message.MessageContentBuilderFactory;
 import love.forte.simbot.api.message.events.GroupMsg;
-import love.forte.simbot.api.message.events.PrivateMsg;
 import love.forte.simbot.api.sender.Sender;
 import love.forte.simbot.filter.MatchType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * WangBot Listen
@@ -85,6 +77,7 @@ public class WangBotListen {
     public void uploadPicListen(GroupMsg groupMsg, Sender sender){
         CatCodeUtil util = CatCodeUtil.INSTANCE;
         String text = groupMsg.getMsg();
+
         // 获取text中索引为0（第一个）的CAT码字符串。
         String catCode1 = util.getCat(text, 0);
         System.out.println(catCode1); // [CAT:at,code=123456]
