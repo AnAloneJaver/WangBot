@@ -2,6 +2,9 @@ package com.wangbot.linstener;
 
 import catcode.CatCodeUtil;
 import catcode.CodeTemplate;
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.http.HttpUtil;
+import com.wangbot.service.WangBotService;
 import love.forte.simbot.annotation.Filter;
 import love.forte.simbot.annotation.OnGroup;
 import love.forte.simbot.api.message.MessageContentBuilderFactory;
@@ -11,8 +14,11 @@ import love.forte.simbot.filter.MatchType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
- * WangBot Listen
+ * WangBot Listener
+ * @Author God
  */
 @Component
 public class WangBotListen {
@@ -28,6 +34,9 @@ public class WangBotListen {
         this.messageContentBuilderFactory = messageContentBuilderFactory;
     }
 
+
+    @Autowired
+    private WangBotService wangBotService;
 
     private final String HELP_INFO = "#h || #help || #帮助 \n 会显示WangBot的基本用法 \n #图片 上传 名称[图片] \n " +
             "#图片 类别 || 随机一张指定类别库的图片 \n #骰子 x <事件名称>|| 扔出 最大 X 的随机数 \n 返回值为: XXX 做 <事件名称> 的成功率为 x \n" +
@@ -77,7 +86,7 @@ public class WangBotListen {
     public void uploadPicListen(GroupMsg groupMsg, Sender sender){
         CatCodeUtil util = CatCodeUtil.INSTANCE;
         String text = groupMsg.getMsg();
-
+        System.out.println(groupMsg.getAccountInfo().getAccountCode());
         // 获取text中索引为0（第一个）的CAT码字符串。
         String catCode1 = util.getCat(text, 0);
         System.out.println(catCode1); // [CAT:at,code=123456]
@@ -90,6 +99,11 @@ public class WangBotListen {
         // 取不到则会为null。
         String file = util.getParam(text, "image", "url");
         System.out.println("file: " + file); // file: null
+        String hz = util.getParam(text, "image", "id");
+        String substring = hz.substring(hz.lastIndexOf("."));
+        System.out.println(substring);
+        long l = HttpUtil.downloadFile(file, FileUtil.file("E:\\"));
+        System.out.println(l);
     }
 
     @OnGroup
@@ -108,12 +122,13 @@ public class WangBotListen {
 
 
 
+    private final Integer MSG_LENGTH = 2;
     @OnGroup
     @Filter(value = "#骰子", matchType = MatchType.STARTS_WITH)
     @Filter(value = "#摇色子", matchType = MatchType.STARTS_WITH)
     public void randomNumListen(GroupMsg groupMsg, Sender sender){
         String[] s = groupMsg.getMsg().split(" ");
-        if(s.length < 2){
+        if(s.length < MSG_LENGTH){
             return;
         }
         //事件
