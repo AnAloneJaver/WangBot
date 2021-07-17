@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangbot.dao.WangBotDao">
+    <resultMap id="BaseResultMap" type="com.wangbot.entitys.PicEntity">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="fromcode" property="fromcode" jdbcType="VARCHAR"/>
+        <result column="groupcode" property="groupcode" jdbcType="VARCHAR"/>
+        <result column="md5" property="md5" jdbcType="VARCHAR"/>
+        <result column="keyword" property="keyword" jdbcType="VARCHAR"/>
+        <result column="filename" property="filename" jdbcType="VARCHAR"/>
+        <result column="identification" property="identification" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, fromcode,groupcode,md5,keyword,filename,identification
+    </sql>
+
+    <insert id="save"  parameterType="com.wangbot.entitys.PicEntity">
+    INSERT INTO pics (
+        <include refid="Base_Column_List"/>
+    )values(
+        #{id,jdbcType=VARCHAR},
+        #{fromcode,jdbcType=VARCHAR},
+        #{groupcode,jdbcType=VARCHAR},
+        #{md5,jdbcType=VARCHAR},
+        #{keyword,jdbcType=VARCHAR},
+        #{filename,jdbcType=VARCHAR},
+        #{identification,jdbcType=VARCHAR}
+    )
+    </insert>
+
+    <select id="findPicByMd5" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from pics where md5 = #{md5,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findPicByKeyword" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from pics where keyword = #{keyword,jdbcType=VARCHAR}
+    </select>
+</mapper>

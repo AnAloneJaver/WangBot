@@ -1,10 +1,11 @@
 package com.wangbot.util;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.crypto.digest.DigestUtil;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.UUID;
 
 /**
  * 文件工具类
@@ -17,10 +18,36 @@ public class FileUtil {
 
     private static String FILE_PATH_PREFIX = null;
 
-    public static String downloadFile(String url) throws FileNotFoundException {
-        String filePathPrefix = FileUtil.getFilePathPrefix();
-        //TODO
-        return filePathPrefix;
+
+    /**
+     * 下载图片
+     * @param url
+     * @param fileNameSuffix
+     * @return
+     */
+    public static JSONObject downloadPic(String url, String fileNameSuffix){
+        JSONObject json = new JSONObject();
+        try {
+            String filePathPrefix = FileUtil.getFilePathPrefix();
+            System.out.println(filePathPrefix);
+            File file = new File(filePathPrefix + "\\pic");
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            String fileName = CommonUtil.getUUID() + "." + fileNameSuffix;
+            String filePath = filePathPrefix + "\\pic\\" + fileName;
+            file = new File(filePath);
+            long l = HttpUtil.downloadFile(url, file);
+            if(l > 0){
+                String md5 = DigestUtil.md5Hex(file);
+                json.set("md5",md5);
+                json.set("filename",fileName);
+                return json;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return json;
 
     }
 
@@ -40,12 +67,20 @@ public class FileUtil {
         return FILE_PATH_PREFIX;
     }
 
-
     /**
-     * 获取UUID
-     * @return
+     * 删除掉存在的图片
+     * @param filename
      */
-    public static String getUUID(){
-       return UUID.randomUUID().toString().replace("-","");
+    public static void delPic(String filename) {
+        String filePathPrefix = FileUtil.getFilePathPrefix();
+        String filePath = filePathPrefix + "\\pic\\" + filename;
+        File file = new File(filePath);
+        if(file.exists()){
+            cn.hutool.core.io.FileUtil.del(file);
+        }
+    }
+
+    public static String getFilePath(String filename){
+        return getFilePathPrefix()+"\\pic\\"+filename;
     }
 }

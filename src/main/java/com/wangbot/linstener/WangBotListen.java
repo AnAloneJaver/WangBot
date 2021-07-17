@@ -1,10 +1,13 @@
 package com.wangbot.linstener;
 
 import catcode.CatCodeUtil;
+import catcode.CodeBuilder;
 import catcode.CodeTemplate;
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import com.wangbot.entitys.PicEntity;
 import com.wangbot.service.WangBotService;
+import com.wangbot.util.FileUtil;
 import love.forte.simbot.annotation.Filter;
 import love.forte.simbot.annotation.OnGroup;
 import love.forte.simbot.api.message.MessageContentBuilderFactory;
@@ -14,11 +17,11 @@ import love.forte.simbot.filter.MatchType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
+import java.io.FileNotFoundException;
 
 /**
  * WangBot Listener
- * @Author God
+ * @author God
  */
 @Component
 public class WangBotListen {
@@ -34,6 +37,8 @@ public class WangBotListen {
         this.messageContentBuilderFactory = messageContentBuilderFactory;
     }
 
+
+    private final Integer MSG_LENGTH = 2;
 
     @Autowired
     private WangBotService wangBotService;
@@ -83,27 +88,70 @@ public class WangBotListen {
 
     @OnGroup
     @Filter(value = "#上传图片", matchType = MatchType.STARTS_WITH)
-    public void uploadPicListen(GroupMsg groupMsg, Sender sender){
+    public void uploadPicListen(GroupMsg groupMsg, Sender sender) throws FileNotFoundException {
         CatCodeUtil util = CatCodeUtil.INSTANCE;
         String text = groupMsg.getMsg();
-        System.out.println(groupMsg.getAccountInfo().getAccountCode());
-        // 获取text中索引为0（第一个）的CAT码字符串。
-        String catCode1 = util.getCat(text, 0);
-        System.out.println(catCode1); // [CAT:at,code=123456]
-
-        // 获取text中第一个CAT码字符串中的第一个'code'参数。
-        String code = util.getParam(text, "code");
-        System.out.println("code: " + code); // code: 123456
-
-        // 获取text中的第一个类型为 'img' 的CAT码字符串的第一个 'file' 参数。
-        // 取不到则会为null。
+        System.out.println(text);
+        String[] s = text.split(" ");
+        if(s.length < MSG_LENGTH){
+            sender.sendGroupMsg(groupMsg,"参数不太对哦 汪~");
+            return;
+        }
+        String keyword = StrUtil.isBlank(s[1]) ? s[2] : s[1];
+        if(StrUtil.isBlank(keyword)){
+            sender.sendGroupMsg(groupMsg,"参数不太对哦 汪~");
+            return;
+        }
+        PicEntity pic = new PicEntity();
         String file = util.getParam(text, "image", "url");
-        System.out.println("file: " + file); // file: null
-        String hz = util.getParam(text, "image", "id");
-        String substring = hz.substring(hz.lastIndexOf("."));
-        System.out.println(substring);
-        long l = HttpUtil.downloadFile(file, FileUtil.file("E:\\"));
-        System.out.println(l);
+        String identification = util.getParam(text, "image", "id");
+        String hz = identification.substring(identification.lastIndexOf(".")+1);
+        System.out.println(identification);
+        pic.setIdentification(identification);
+        JSONObject json  = FileUtil.downloadPic(file, hz);
+        pic.setFromcode(groupMsg.getAccountInfo().getAccountCode());
+        pic.setGroupcode(groupMsg.getGroupInfo().getGroupCode());
+        pic.setKeyword(keyword);
+        if(!json.isEmpty()){
+            pic.setFilename(json.getStr("filename"));
+            pic.setMd5(json.getStr("md5"));
+        }else{
+            sender.sendGroupMsg(groupMsg,"图片上传失败了汪~");
+            return;
+        }
+        int res = wangBotService.savePic(pic);
+        if(res > 0){
+            sender.sendGroupMsg(groupMsg,"图片上传成功！汪~");
+        }else{
+            sender.sendGroupMsg(groupMsg,"图片上传失败! 汪~");
+        }
+    }
+
+
+    @OnGroup
+    @Filter(value = "#图片", matchType = MatchType.STARTS_WITH)
+    public void picListen(GroupMsg groupMsg, Sender sender) throws FileNotFoundException {
+        // 获取猫猫码工具
+        CatCodeUtil util = CatCodeUtil.INSTANCE;
+        String text = groupMsg.getMsg();
+        String[] s = text.split(" ");
+        if(s.length < MSG_LENGTH){
+            sender.sendGroupMsg(groupMsg,"你要找什么图片呢？ 汪~");
+            return;
+        }
+        String keyword = s[1];
+        System.out.println(keyword);
+        PicEntity pic = wangBotService.findPicByKeyword(keyword);
+        System.out.println(pic.toString());
+        String filepath = FileUtil.getFilePath(pic.getFilename());
+        // 获取构建器
+        CodeBuilder<String> builder = util.getStringCodeBuilder("image", true);
+
+        // 构建器可以使构建的内容更加明了易懂
+        String image = builder.key("id").value(pic.getIdentification())
+                .key("file").value(filepath)
+                .build();
+        sender.sendGroupMsg(groupMsg,image);
     }
 
     @OnGroup
@@ -122,7 +170,6 @@ public class WangBotListen {
 
 
 
-    private final Integer MSG_LENGTH = 2;
     @OnGroup
     @Filter(value = "#骰子", matchType = MatchType.STARTS_WITH)
     @Filter(value = "#摇色子", matchType = MatchType.STARTS_WITH)

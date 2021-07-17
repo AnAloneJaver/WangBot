@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * 图片实体
- * @Author God
+ * @author God
  */
 @Data
 public class PicEntity {
@@ -28,7 +28,11 @@ public class PicEntity {
      */
    private String keyword;
     /**
-     * 文件的保存地址
+     * 文件保存到服务器的名称
      */
-   private String path;
+   private String filename;
+    /**
+     * 文件的标识id
+     */
+   private String identification;
 }
