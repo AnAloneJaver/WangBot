@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * 图片实体
- * @author God
+ * @author GodLike
  */
 @Data
 public class PicEntity {
