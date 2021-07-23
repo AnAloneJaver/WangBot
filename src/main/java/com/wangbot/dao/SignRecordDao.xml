@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wangbot.dao.SignRecordDao">
+    <resultMap id="BaseResultMap" type="com.wangbot.entitys.SignRecord">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="accountcode" property="accountcode" jdbcType="VARCHAR"/>
+        <result column="signtime" property="signtime" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, accountcode,signtime
+    </sql>
+
+    <select id="countByMap" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(1) from sign_record
+        <where>
+            <if test="props.accountCode != null and props.accountCode != ''">
+                and accountcode = #{props.accountCode}
+            </if>
+            <if test="props.signtime != null and props.signtime != ''">
+                and signtime &gt; #{props.signtime}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="signIned" resultType="java.lang.Integer">
+        select count(1) from sign_record
+        <where>
+            <if test="accountCode != null and accountCode != ''">
+                and accountcode = #{accountCode}
+            </if>
+            <if test="today != null and today != ''">
+                and signtime = #{today}
+            </if>
+        </where>
+    </select>
+
+    <insert id="save"  parameterType="com.wangbot.entitys.SignRecord">
+        INSERT INTO sign_record (
+        <include refid="Base_Column_List"/>
+        )values(
+        #{signRecord.id,jdbcType=VARCHAR},
+        #{signRecord.accountcode,jdbcType=VARCHAR},
+        #{signRecord.signtime,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>

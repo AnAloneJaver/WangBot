@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.wangbot.dao.WangBotDao">
+<mapper namespace="com.wangbot.dao.PicDao">
     <resultMap id="BaseResultMap" type="com.wangbot.entitys.PicEntity">
         <id column="id" property="id" jdbcType="VARCHAR"/>
         <result column="fromcode" property="fromcode" jdbcType="VARCHAR"/>
@@ -27,16 +27,19 @@
         #{identification,jdbcType=VARCHAR}
     )
     </insert>
+    <delete id="delById">
+        delete from pics where id = #{id,jdbcType=VARCHAR}
+    </delete>
 
     <select id="findPicByMd5" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from pics where md5 = #{md5,jdbcType=VARCHAR}
+        from pics where md5 = #{md5,jdbcType=VARCHAR} and fromcode &lt;&gt; #{accountcode,jdbcType=VARCHAR}
     </select>
 
     <select id="findPicByKeyword" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from pics where keyword = #{keyword,jdbcType=VARCHAR}
+        from pics where keyword = #{keyword,jdbcType=VARCHAR} and fromcode = #{accountcode,jdbcType=VARCHAR}
     </select>
 </mapper>

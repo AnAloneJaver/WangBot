@@ -72,15 +72,20 @@ public class FileUtil {
      * @param filename
      */
     public static void delPic(String filename) {
-        String filePathPrefix = FileUtil.getFilePathPrefix();
-        String filePath = filePathPrefix + "\\pic\\" + filename;
+        String filePath = getFilePath(filename);
         File file = new File(filePath);
         if(file.exists()){
             cn.hutool.core.io.FileUtil.del(file);
         }
     }
 
+    /**
+     * 获取保存文件的地址
+     * @param filename
+     * @return
+     */
     public static String getFilePath(String filename){
         return getFilePathPrefix()+"\\pic\\"+filename;
     }
+
 }
