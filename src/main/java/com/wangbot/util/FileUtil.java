@@ -30,12 +30,12 @@ public class FileUtil {
         try {
             String filePathPrefix = FileUtil.getFilePathPrefix();
             System.out.println(filePathPrefix);
-            File file = new File(filePathPrefix + "\\pic");
+            File file = new File(filePathPrefix + File.separator+"pic");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
             String fileName = CommonUtil.getUUID() + "." + fileNameSuffix;
-            String filePath = filePathPrefix + "\\pic\\" + fileName;
+            String filePath = getFilePath(fileName);
             file = new File(filePath);
             long l = HttpUtil.downloadFile(url, file);
             if(l > 0){
@@ -58,11 +58,7 @@ public class FileUtil {
      */
     public static String getFilePathPrefix(){
         if(FILE_PATH_PREFIX == null ){
-            try {
-                FILE_PATH_PREFIX = new File(ResourceUtils.getURL("classpath:").getPath()).getParentFile().getParentFile().getParent();
-            }catch (Exception e){
-                FILE_PATH_PREFIX = "E:\\";
-            }
+                FILE_PATH_PREFIX = File.separator+"usr"+File.separator+"local"+File.separator+"src"+File.separator+"wangbot"+File.separator+"file";
         }
         return FILE_PATH_PREFIX;
     }
@@ -85,7 +81,7 @@ public class FileUtil {
      * @return
      */
     public static String getFilePath(String filename){
-        return getFilePathPrefix()+"\\pic\\"+filename;
+        return getFilePathPrefix()+ File.separator+ "pic"+File.separator+filename;
     }
 
 }

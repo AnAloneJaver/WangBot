@@ -121,9 +121,9 @@ public class WangBotListen {
             return;
         }
         //去掉猫猫码
-        keyword = keyword.substring(0,keyword.indexOf("\n"));
+        keyword = keyword.substring(0,keyword.indexOf("["));
         //去掉\n
-        keyword = keyword.replace("\\n","");
+        keyword = keyword.replace("\n","");
         //解析猫猫码
         PicEntity pic = new PicEntity();
         List<Neko> image = msgContent.getCats("image");
@@ -194,7 +194,7 @@ public class WangBotListen {
                     .build();
             sender.sendGroupMsg(groupMsg,image);
         }catch (Exception e){
-            sender.sendGroupMsg(groupMsg,"图可能被咬坏了");
+            sender.sendGroupMsg(groupMsg,"图被二哈撕碎了");
         }
     }
 
@@ -283,9 +283,14 @@ public class WangBotListen {
              min = Integer.valueOf(s[2]);
              max = Integer.valueOf(s[3]);
         }catch (Exception e){
-            sender.sendGroupMsg(groupMsg,"注意哦 参数要为数字汪！");
-            return;
+            if(min == 0){
+                sender.sendGroupMsg(groupMsg,"注意哦 参数要为数字汪！");
+                return;
+            }else{
+                max = min;
+            }
         }
+
         int random = getrandom(min, max);
         String msg = "你"+thing+"的成功率是"+random+"汪!";
         if(thing.contains("{r}") || thing.contains("{R}")){

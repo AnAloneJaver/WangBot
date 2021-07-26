@@ -21,7 +21,7 @@
 
 
     <update id="update" parameterType="com.wangbot.entitys.IntegralRecord">
-        UPDATE integral_record SET integral = #{ir.integral,jdbcType=INTEGER} WHERE account = #{ir.integral,jdbcType=VARCHAR}
+        UPDATE integral_record SET integral = #{ir.integral,jdbcType=INTEGER} WHERE accountcode = #{ir.integral,jdbcType=VARCHAR}
     </update>
 
     <select id="selectOneByAccount" resultType="com.wangbot.entitys.IntegralRecord">

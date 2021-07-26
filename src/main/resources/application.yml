@@ -2,7 +2,7 @@ logging:
   level:
     love:
       forte:
-        simbot: debug
+        simbot: error
 
 simbot:
   core:
@@ -45,4 +45,4 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   mapper-locations: classpath*:com/wangbot/**/dao/*.xml
-  typeAliasesPackage: com.futil.**.entitys.*
+  typeAliasesPackage: com.wangbot.**.entitys.*
